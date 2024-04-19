@@ -5,13 +5,9 @@ import 'froala-editor/js/plugins/image.min.js';
 import FroalaEditorComponent from 'react-froala-wysiwyg';
 
 export default function RichText() {
-  const iframeStyle = `
-    .fr-wrapper : {
-       height: 100vh
-    }
-  `
   let config = {
     iframe: true,
+    fullPage: true,
     events: {
       'contentChanged': function(e: any, editor: any) {
         console.log('test');
@@ -37,9 +33,9 @@ export default function RichText() {
         {`
         .fr-wrapper {
           height: 100vh;
+          overflow: hidden;
         }
       `}
-
       </style>
       <div className="flex flex-col h-screen">
         <FroalaEditorComponent tag='textarea' config={config} />
