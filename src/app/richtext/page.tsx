@@ -27,7 +27,7 @@ const defaultContent = `<div>
       <div data-element_type="widget" data-id="1875aae" data-widget_type="html.default">
         <img src="https://froala.com/wp-content/uploads/2019/10/samsung.svg" alt="Samsung" height="25" data-ll-status="loaded" class="fr-fic fr-dii fr-draggable" width="25">
         <img data-fr-image-pasted="true" src="https://froala.com/wp-content/uploads/2019/10/apple.svg" alt="Apple" height="25" data-lazy-loaded="true" data-ll-status="loaded" class="fr-fic fr-dii fr-draggable" width="62">
-        <img data-fr-image-pasted="true" src="https://froala.com/wp-content/uploads/2019/10/ibm.svg" alt="IBM" height="25" data-lazy-loaded="true" data-ll-status="loaded" class="fr-fic fr-dii fr-draggable" width="62">
+          <img data-fr-image-pasted="true" src="https://froala.com/wp-content/uploads/2019/10/ibm.svg" alt="IBM" height="25" data-lazy-loaded="true" data-ll-status="loaded" class="fr-fic fr-dii fr-draggable" width="62">
         <img src="https://froala.com/wp-content/uploads/2019/10/amazon.svg" alt="Amazon" height="25" data-ll-status="loaded" class="fr-fic fr-dii fr-draggable" width="124">
         <img src="https://froala.com/wp-content/uploads/2019/10/ebay.svg" alt="Ebay" height="25" data-ll-status="loaded" class="fr-fic fr-dii fr-draggable" width="62">
         <img src="https://froala.com/wp-content/uploads/2019/10/intel.svg" alt="Intel" height="25" data-ll-status="loaded" class="fr-fic fr-dii fr-draggable" width="38">
@@ -115,7 +115,6 @@ export default function RichText() {
           "help"
         ],
         align: "right",
-<<<<<<< HEAD
         buttonsVisible: 2,
       },
       pluginsEnabled: [
@@ -145,10 +144,6 @@ export default function RichText() {
         // 'spellChecker',
         "imageTUI"
       ]
-=======
-        buttonsVisible: 2
-      }
->>>>>>> d9dd6dec645d937e1002f0af5ac6957918229a4a
     },
     pluginsEnabled: [
       "table",
