@@ -1,10 +1,15 @@
 'use client';
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
+<<<<<<< HEAD
+import 'froala-editor/js/plugins/image.min.js';
+=======
+>>>>>>> d9dd6dec645d937e1002f0af5ac6957918229a4a
 import "froala-editor/js/third_party/embedly.min.js";
 import "froala-editor/js/plugins/fullscreen.min.js";
 import "froala-editor/css/plugins/fullscreen.min.css";
 import FroalaEditorComponent from 'react-froala-wysiwyg';
+import { useSearchParams } from 'next/navigation';
 
 const defaultContent = `<div>
 <section data-element_type="section" data-id="6dad7bdb">
@@ -40,7 +45,15 @@ const defaultContent = `<div>
   </div>`;
 
 export default function RichText() {
+  const searchParams = useSearchParams()
+  const iframe: boolean = searchParams.get('iframe') === 'true'
   let config = {
+    iframe: iframe,
+    events: {
+      'contentChanged': function(e: any, editor: any) {
+        console.log('test');
+      }
+    },
     attribution: false,
     placeholder: "Start typing...",
     toolbarButtons: {
@@ -105,8 +118,40 @@ export default function RichText() {
           "help"
         ],
         align: "right",
+<<<<<<< HEAD
+        buttonsVisible: 2,
+      },
+      pluginsEnabled: [
+        "table",
+        "spell",
+        "quote",
+        "save",
+        "quickInsert",
+        "paragraphFormat",
+        "paragraphStyle",
+        "help",
+        "draggable",
+        "align",
+        "link",
+        "lists",
+        "file",
+        "image",
+        "emoticons",
+        "url",
+        "video",
+        "embedly",
+        "colors",
+        "entities",
+        "inlineClass",
+        "inlineStyle",
+        // 'codeBeautif '
+        // 'spellChecker',
+        "imageTUI"
+      ]
+=======
         buttonsVisible: 2
       }
+>>>>>>> d9dd6dec645d937e1002f0af5ac6957918229a4a
     },
     pluginsEnabled: [
       "table",
@@ -137,20 +182,17 @@ export default function RichText() {
     ]
   }
   return (
-    <main>
-      <style>
-        {`
-    .fr-wrapper {
-      height: 100vh;
-      overflow: hidden;
-    }
-  `}
-      </style>
-      <div className="flex flex-col h-screen">
-        <FroalaEditorComponent
-          config={config}
-          model={defaultContent}
-        />
+    <main >
+      {/* <style> */}
+      {/*   {` */}
+      {/*   .fr-wrapper { */}
+      {/*     height: 100vh; */}
+      {/*     overflow: hidden; */}
+      {/*   } */}
+      {/* `} */}
+      {/* </style> */}
+      <div className="flex flex-col h-screen bg-white">
+        <FroalaEditorComponent tag='textarea' config={config} />
       </div>
     </main>
 
