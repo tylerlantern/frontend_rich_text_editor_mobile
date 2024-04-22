@@ -111,15 +111,15 @@ export default function RichText() {
   };
   return (
     <main >
-      <style>
-        {`
-        .fr-wrapper {
-          height: 100vh;
-          overflow: hidden;
-        }
-      `}
-      </style>
-      <div className="flex flex-col h-screen">
+      {/* <style> */}
+      {/*   {` */}
+      {/*   .fr-wrapper { */}
+      {/*     height: 100vh; */}
+      {/*     overflow: hidden; */}
+      {/*   } */}
+      {/* `} */}
+      {/* </style> */}
+      <div className="flex flex-col h-screen bg-white">
         <FroalaEditorComponent tag='textarea' config={config} />
       </div>
     </main >
