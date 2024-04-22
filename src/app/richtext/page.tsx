@@ -6,11 +6,13 @@ import "froala-editor/js/third_party/embedly.min.js";
 import "froala-editor/js/plugins/fullscreen.min.js";
 import "froala-editor/css/plugins/fullscreen.min.css";
 import FroalaEditorComponent from 'react-froala-wysiwyg';
+import { useSearchParams } from 'next/navigation';
 
 export default function RichText() {
+  const searchParams = useSearchParams()
+  const iframe: boolean = searchParams.get('iframe') === 'true'
   let config = {
-    iframe: true,
-    fullPage: true,
+    iframe: iframe,
     events: {
       'contentChanged': function(e: any, editor: any) {
         console.log('test');
