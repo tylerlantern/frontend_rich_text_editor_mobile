@@ -1,9 +1,9 @@
 'use client';
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
-import "froala-editor/js/plugins.pkgd.min.js";
 import "froala-editor/js/third_party/embedly.min.js";
-import "froala-editor/js/plugins/fullscreen.min.js"
+import "froala-editor/js/plugins/fullscreen.min.js";
+import "froala-editor/css/plugins/fullscreen.min.css";
 import FroalaEditorComponent from 'react-froala-wysiwyg';
 
 const defaultContent = `<div>
@@ -138,20 +138,20 @@ export default function RichText() {
   }
   return (
     <main>
-    <style>
-    {`
+      <style>
+        {`
     .fr-wrapper {
       height: 100vh;
       overflow: hidden;
     }
   `}
-  </style>
-  <div className="flex flex-col h-screen">
-    <FroalaEditorComponent 
-      config={config}
-      model={defaultContent}
-     />
-  </div>
+      </style>
+      <div className="flex flex-col h-screen">
+        <FroalaEditorComponent
+          config={config}
+          model={defaultContent}
+        />
+      </div>
     </main>
 
   );
