@@ -7,6 +7,7 @@ import "froala-editor/js/plugins/fullscreen.min.js";
 import "froala-editor/css/plugins/fullscreen.min.css";
 import FroalaEditorComponent from 'react-froala-wysiwyg';
 import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const defaultContent = `<div>
 <section data-element_type="section" data-id="6dad7bdb">
@@ -41,16 +42,45 @@ const defaultContent = `<div>
     </section>
   </div>`;
 
+interface State {
+  model: string;
+}
+
+declare global {
+  interface Window {
+    getState?: () => string;
+  }
+}
+
 export default function RichText() {
+
+  const [model, setModel] = useState<string>("")
+
+  const onModelChange = (value: string) => {
+    setModel(value)
+  }
+
   const searchParams = useSearchParams()
   const iframe: boolean = searchParams.get('iframe') === 'true'
+
+  function getRawHTML(): string {
+    return model
+  }
+
+  function setRawHTML(value: string) {
+    setModel(value)
+  }
+
+  useEffect(
+    () => {
+      (window as any).getRawHTML = getRawHTML;
+      (window as any).setRawHTML = setRawHTML;
+      console.log('model', model)
+    }, [model]
+  );
+
   let config = {
     iframe: iframe,
-    events: {
-      'contentChanged': function(e: any, editor: any) {
-        console.log('test');
-      }
-    },
     attribution: false,
     placeholder: "Start typing...",
     toolbarButtons: {
@@ -168,25 +198,14 @@ export default function RichText() {
       "entities",
       "inlineClass",
       "inlineStyle",
-      // 'codeBeautif '
-      // 'spellChecker',
       "imageTUI"
     ]
   }
   return (
     <main>
-      {/*     <style> */}
-      {/*       {` */}
-      {/*   .fr-wrapper { */}
-      {/*     height: 100vh; */}
-      {/*     overflow: hidden; */}
-      {/*   } */}
-      {/* `} */}
-      {/* </style> */}
       <div className="flex flex-col h-screen bg-white">
-        <FroalaEditorComponent tag='textarea' config={config} />
+        <FroalaEditorComponent tag='textarea' config={config} model={model} onModelChange={onModelChange} />
       </div>
     </main>
-
   );
 }
