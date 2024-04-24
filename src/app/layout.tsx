@@ -17,9 +17,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      {/* <Head> */}
-      {/*   <link href="node_modules/froala-editor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" /> */}
-      {/* </Head> */}
       <body className={inter.className}>{children}</body>
     </html>
   );
