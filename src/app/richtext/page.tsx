@@ -12,13 +12,18 @@ const FroalaEditor = dynamic(
     const values = await Promise.all([
       import("react-froala-wysiwyg"),
       /* @ts-ignore */
+      import("froala-editor/js/froala_editor.min.js"),
+      /* @ts-ignore */
       import("froala-editor/js/plugins.pkgd.min.js"),
       /* @ts-ignore */
       import("froala-editor/js/froala_editor.pkgd.min.js"),
       /* @ts-ignore */
       import("froala-editor/js/plugins/image.min.js"),
       /* @ts-ignore */
-      import('froala-editor/js/plugins/draggable.min.js')
+      import('froala-editor/js/plugins/draggable.min.js'),
+      /* @ts-ignore */
+      import("froala-editor/js/third_party/embedly.min.js")
+
     ]);
     return values[0];
   },
