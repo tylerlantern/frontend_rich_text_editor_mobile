@@ -31,3 +31,16 @@ body {
     text-wrap: balance;
   }
 }
+
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  overflow: auto;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+
