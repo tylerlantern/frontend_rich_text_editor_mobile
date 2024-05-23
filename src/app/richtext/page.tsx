@@ -3,11 +3,10 @@
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import "froala-editor/css/plugins/fullscreen.min.css";
-
-import { ComponentType, Suspense, useEffect, useState } from 'react';
+import { dependencyKeys } from '@/client_modules/DependencyKeys';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-
 const FroalaReactComponent = dynamic(
   async () => {
     const values = await Promise.all([
@@ -24,7 +23,6 @@ const FroalaReactComponent = dynamic(
       import('froala-editor/js/plugins/draggable.min.js'),
       /* @ts-ignore */
       import("froala-editor/js/third_party/embedly.min.js")
-
     ]);
     return values[0];
   },
@@ -44,6 +42,8 @@ export default function RichText() {
 
   const [model, setModel] = useState<string>("")
 
+  const [token, setToken] = useState<string>("")
+
   const onModelChange = (value: string) => {
     setModel(value)
   }
@@ -58,12 +58,19 @@ export default function RichText() {
   function setRawHTML(value: string) {
     setModel(value)
   }
+
+  function auth(value: string) {
+    setToken(value)
+  }
+
   const noTranslateAttrs = { class: 'notranslate', translate: 'no' };
+  const editorRef = useRef(null);
+
   useEffect(
     () => {
       (window as any).getRawHTML = getRawHTML;
       (window as any).setRawHTML = setRawHTML;
-
+      (window as any).auth = auth;
       import('froala-editor').then(FroalaEditor => {
         FroalaEditor.default.DefineIconTemplate('element', '[ELEMENT]');
         FroalaEditor.default.DefineIcon('doNotTranslate', {
@@ -86,10 +93,14 @@ export default function RichText() {
             else $button.removeClass('fr-active');
           },
         });
-      });
-    }, [model]
-  );
 
+        FroalaEditor.default.OPTS_MAPPING
+
+        console.log('editorRef', editorRef)
+
+      });
+    }
+  )
   const iframeStyle = `
   body {
     font-family: sans-serif;
@@ -266,13 +277,24 @@ export default function RichText() {
       "inlineClass",
       "inlineStyle",
       "imageTUI"
-    ]
+    ],
+    events: {
+      'image.beforeUpload': function() {
+        console.log('beforeupload')
+      },
+      'image.inserted': function(image: any) {
+        // (window as any).webkit.messageHandlers.callback.postMessage("inserted image");
+        console.log('insert', image)
+      }
+    }
   }
   return (
     <Suspense>
       <main>
         <div className="flex flex-col h-screen bg-white">
           <FroalaReactComponent
+            /* @ts-ignore */
+            ref={editorRef}
             tag='textarea'
             config={config}
             model={model}
