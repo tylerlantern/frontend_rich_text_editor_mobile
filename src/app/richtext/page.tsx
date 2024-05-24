@@ -22,13 +22,12 @@ const FroalaEditorComponent = dynamic(
 
 export default async function RichText() {
   return (
-    <main>
-      <div className="flex flex-col h-screen bg-white">
-        <Suspense>
+    <Suspense>
+      <main>
+        <div className="flex flex-col h-screen bg-white">
           <FroalaEditorComponent ></FroalaEditorComponent>
-        </Suspense>
-      </div>
-    </main>
-    // </Suspense >
+        </div>
+      </main>
+    </Suspense >
   );
 }

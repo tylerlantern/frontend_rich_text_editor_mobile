@@ -20,39 +20,55 @@ import { apiClient, imageKitClient } from '@/client_modules/DependencyKeys';
 const FroalaEditorComponent: React.FC = () => {
   const searchParams = useSearchParams()
   const iframe: boolean = searchParams.get('iframe') === 'true'
+  const isMobile: boolean = searchParams.get('isMobile') === 'true'
   const initialized = useRef(false)
   const [model, setModel] = useState<string>("")
 
-  const [token, setToken] = useState<string>("")
-
   const onModelChange = (value: string) => {
     setModel(value)
+  }
+
+  function postMessage(value: string) {
+    if (isMobile) {
+      (window as any).webkit.messageHandlers.callback.postMessage(value);
+      return
+    }
+    console.log(value)
   }
 
   function getRawHTML(): string {
     return model
   }
 
-  function setRawHTML(value: string) {
-    setModel(value)
-  }
-
-  function auth(value: string) {
-    setToken(value)
+  function initialize(
+    placeId: number,
+    accessToken: string,
+    rawHTML: string
+  ) {
+    setModel(rawHTML)
+    loadS3UploadSettigns(
+      placeId,
+      accessToken
+    )
   }
 
   const noTranslateAttrs = { class: 'notranslate', translate: 'no' };
   const editorRef = useRef(null)
 
   const loadS3UploadSettigns = async (placeId: number, token: string) => {
+    postMessage(`------------------------------------------------`)
+    postMessage(`loadS3UploadSettigns:::${placeId}`)
+    postMessage(`${token}`)
+    postMessage(`------------------------------------------------`)
     try {
+      postMessage('reach here')
       const settingInfos = await apiClient.getEditorInfo({ placeId, token })
       /* @ts-ignore */
       const editor = editorRef.current.editor
-      // console.log('editor.opts.fileUploadToS3', editor.opts)
       editor.opts.imageUploadToS3 = settingInfos
+      postMessage('set up s3 successfully')
     } catch (e) {
-      console.log('unable to setup uploading to s3')
+      postMessage(`unable to setup uploading to s3::${e}`)
     }
   }
 
@@ -62,8 +78,7 @@ const FroalaEditorComponent: React.FC = () => {
     }
     initialized.current = true;
     (window as any).getRawHTML = getRawHTML;
-    (window as any).setRawHTML = setRawHTML;
-    (window as any).auth = auth;
+    (window as any).initialize = initialize;
     Froala.DefineIconTemplate('element', '[ELEMENT]');
     Froala.DefineIconTemplate('element', '[ELEMENT]');
     Froala.DefineIcon('doNotTranslate', {
@@ -86,10 +101,6 @@ const FroalaEditorComponent: React.FC = () => {
         else $button.removeClass('fr-active');
       },
     });
-    loadS3UploadSettigns(
-      1716,
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0NDYsImlhdCI6MTcxNjUyNTE2NywiZXhwIjoxNzE2NTI4NzY3LCJzdWIiOiJBY2Nlc3NUb2tlbiJ9.5bqCegyMs7zmCfgafAavgpGGRDV9g15EN9FtouMK7XU'
-    )
   }, []);
 
 
@@ -272,10 +283,9 @@ const FroalaEditorComponent: React.FC = () => {
     ],
     events: {
       'image.beforeUpload': function() {
-        console.log('beforeupload')
+        //TODO
       },
       'image.inserted': function(image: any) {
-        // (window as any).webkit.messageHandlers.callback.postMessage("inserted image");
         const url = new URL(image[0].src);
         const imageSplit = url.pathname
           .substring(1)
