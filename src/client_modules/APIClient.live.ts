@@ -1,10 +1,10 @@
+
 import EditorInfoResponse from "@/response/EditorInfoResponse";
 import { APIClient } from "./APIClient";
 
-const baseURL: string | undefined = process.env.BASE_URL
-
+const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BASE_URL
 const endpoint = function(path: string): string {
-  return `${baseURL}/${path}`
+  return `${BASE_URL}/${path}`
 }
 
 export function getAPICLientLive(): APIClient {

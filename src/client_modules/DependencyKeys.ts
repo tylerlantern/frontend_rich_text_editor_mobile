@@ -1,10 +1,5 @@
-import { APIClient } from "./APIClient"
 import { getAPICLientLive } from "./APIClient.live";
+import { getImageKitClientLive } from "./ImageKitClient.live";
 
-export type DependencyKeys = {
-  apiClient: APIClient;
-}
-
-export const dependencyKeys: DependencyKeys = {
-  apiClient: getAPICLientLive()
-}
+export const apiClient = getAPICLientLive()
+export const imageKitClient = getImageKitClientLive()
