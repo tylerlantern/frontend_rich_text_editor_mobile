@@ -17,7 +17,13 @@ import "froala-editor/js/third_party/embedly.min.js"
 import { useSearchParams } from 'next/navigation';
 import { apiClient, imageKitClient } from '@/client_modules/DependencyKeys';
 
-const FroalaEditorComponent: React.FC = () => {
+type Props = {
+  token: string,
+  placeId: number
+}
+
+
+const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
   const searchParams = useSearchParams()
   const iframe: boolean = searchParams.get('iframe') === 'true'
   const isMobile: boolean = searchParams.get('isMobile') === 'true'
@@ -41,21 +47,15 @@ const FroalaEditorComponent: React.FC = () => {
   }
 
   function initialize(
-    placeId: number,
-    accessToken: string,
     rawHTML: string
   ) {
     setModel(rawHTML)
-    loadS3UploadSettigns(
-      placeId,
-      accessToken
-    )
   }
 
   const noTranslateAttrs = { class: 'notranslate', translate: 'no' };
   const editorRef = useRef(null)
 
-  const loadS3UploadSettigns = async (placeId: number, token: string) => {
+  const loadS3UploadSettings = async (token: string, placeId: number) => {
     postMessage(`------------------------------------------------`)
     postMessage(`loadS3UploadSettigns:::${placeId}`)
     postMessage(`${token}`)
@@ -101,6 +101,7 @@ const FroalaEditorComponent: React.FC = () => {
         else $button.removeClass('fr-active');
       },
     });
+    loadS3UploadSettings(token, placeId)
   }, []);
 
 

@@ -1,6 +1,7 @@
 'use server';
 
 import dynamic from 'next/dynamic';
+import { headers } from 'next/headers';
 import { Suspense } from 'react';
 
 declare global {
@@ -21,11 +22,13 @@ const FroalaEditorComponent = dynamic(
 );
 
 export default async function RichText() {
+  const token = headers().get('token')
+  const placeId: number = +headers().get('placeId')
   return (
     <Suspense>
       <main>
         <div className="flex flex-col h-screen bg-white">
-          <FroalaEditorComponent ></FroalaEditorComponent>
+          <FroalaEditorComponent token={token} placeId={placeId} ></FroalaEditorComponent>
         </div>
       </main>
     </Suspense >

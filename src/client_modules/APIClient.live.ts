@@ -17,8 +17,7 @@ export function getAPICLientLive(): APIClient {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'Custom-Header': 'CustomHeaderValue'
+          'Authorization': `Bearer ${token}`
         }
       });
       if (!response.ok) {
