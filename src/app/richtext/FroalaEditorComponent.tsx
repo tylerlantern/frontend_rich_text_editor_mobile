@@ -16,19 +16,26 @@ import "froala-editor/js/plugins/draggable.min.js"
 import "froala-editor/js/third_party/embedly.min.js"
 import { useSearchParams } from 'next/navigation';
 import { apiClient, imageKitClient } from '@/client_modules/DependencyKeys';
+import { UnauthorizedError } from '@/client_modules/APIClient';
+
 
 type Props = {
-  token: string,
-  placeId: number
+  token: string | null,
+  placeId: number | null
 }
 
+enum DisplayStatus {
+  IDLE,
+  SHOWING,
+  REFRESH
+}
 
 const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
   const searchParams = useSearchParams()
   const iframe: boolean = searchParams.get('iframe') === 'true'
   const isMobile: boolean = searchParams.get('isMobile') === 'true'
-  const initialized = useRef(false)
   const [model, setModel] = useState<string>("")
+  const [status, setStatus] = useState<DisplayStatus>(DisplayStatus.IDLE)
 
   const onModelChange = (value: string) => {
     setModel(value)
@@ -47,36 +54,46 @@ const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
   }
 
   function initialize(
+    token: string,
+    placeId: number,
     rawHTML: string
   ) {
     setModel(rawHTML)
+    loadS3UploadSettings(
+      token,
+      placeId
+    )
   }
 
   const noTranslateAttrs = { class: 'notranslate', translate: 'no' };
   const editorRef = useRef(null)
 
   const loadS3UploadSettings = async (token: string, placeId: number) => {
-    postMessage(`------------------------------------------------`)
-    postMessage(`loadS3UploadSettigns:::${placeId}`)
-    postMessage(`${token}`)
-    postMessage(`------------------------------------------------`)
     try {
-      postMessage('reach here')
       const settingInfos = await apiClient.getEditorInfo({ placeId, token })
       /* @ts-ignore */
+      postMessage('able to load settingsInfo')
       const editor = editorRef.current.editor
+      postMessage(`editor${editor}`)
+
       editor.opts.imageUploadToS3 = settingInfos
-      postMessage('set up s3 successfully')
+      setStatus(DisplayStatus.SHOWING)
     } catch (e) {
+      if (e instanceof UnauthorizedError) {
+        postMessage(`unauthorized`)
+        setStatus(DisplayStatus.REFRESH)
+        return
+      }
       postMessage(`unable to setup uploading to s3::${e}`)
+      setStatus(DisplayStatus.REFRESH)
     }
   }
 
+  const didTapRefreshButton = () => {
+    postMessage('event.onRefresh')
+  }
+
   useEffect(() => {
-    if (initialized.current) {
-      return
-    }
-    initialized.current = true;
     (window as any).getRawHTML = getRawHTML;
     (window as any).initialize = initialize;
     Froala.DefineIconTemplate('element', '[ELEMENT]');
@@ -101,8 +118,9 @@ const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
         else $button.removeClass('fr-active');
       },
     });
-    loadS3UploadSettings(token, placeId)
-  }, []);
+    if (token && placeId && status == DisplayStatus.IDLE && editorRef.current)
+      loadS3UploadSettings(token, placeId)
+  }, [status]);
 
 
   const iframeStyle = `
@@ -301,14 +319,44 @@ const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
   }
 
   return (
-    <FroalaEditor
-      /* @ts-ignore */
-      ref={editorRef}
-      tag='textarea'
-      config={config}
-      model={model}
-      onModelChange={onModelChange}
-    />
+    <>
+      {
+        status == DisplayStatus.IDLE &&
+        <div>IDLE</div>
+      }
+      {
+        status == DisplayStatus.REFRESH &&
+        <RefreshComponent didTapRefreshButton={didTapRefreshButton}></RefreshComponent>
+      }
+      <div style={{ visibility: status === DisplayStatus.SHOWING ? 'visible' : 'hidden' }}>
+        <FroalaEditor
+          /* @ts-ignore */
+          ref={editorRef}
+          tag='textarea'
+          config={config}
+          model={model}
+          onModelChange={onModelChange}
+        />
+      </div>
+    </>
+  )
+}
+
+
+type RefreshComponentProps = {
+  didTapRefreshButton: () => void
+}
+
+const RefreshComponent: React.FC<RefreshComponentProps> = ({ didTapRefreshButton }) => {
+  return (
+    <div className="flex justify-center w-full py-8">
+      <button
+        className="rounded-none px-3 py-3 bg-slate-400"
+        onClick={didTapRefreshButton}
+      >
+        Refresh
+      </button>
+    </div>
   )
 }
 

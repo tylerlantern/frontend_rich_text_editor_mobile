@@ -1,6 +1,6 @@
 
 import EditorInfoResponse from "@/response/EditorInfoResponse";
-import { APIClient } from "./APIClient";
+import { APIClient, UnauthorizedError } from "./APIClient";
 
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BASE_URL
 const endpoint = function(path: string): string {
@@ -21,6 +21,9 @@ export function getAPICLientLive(): APIClient {
         }
       });
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new UnauthorizedError();
+        }
         throw new Error('Network response was not ok ' + response.statusText);
       }
       const data: EditorInfoResponse = await response.json();
