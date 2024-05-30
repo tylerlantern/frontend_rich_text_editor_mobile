@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Froala from 'froala-editor';
 import FroalaEditor from 'react-froala-wysiwyg';
 
@@ -17,7 +17,6 @@ import "froala-editor/js/third_party/embedly.min.js"
 import { useSearchParams } from 'next/navigation';
 import { apiClient, imageKitClient } from '@/client_modules/DependencyKeys';
 import { UnauthorizedError } from '@/client_modules/APIClient';
-
 
 type Props = {
   token: string | null,
@@ -49,33 +48,31 @@ const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
     console.log(value)
   }
 
-  function getRawHTML(): string {
-    return model
-  }
+  const getRawHTML = useCallback((): string => {
+    return model;
+  }, [model]);
 
   function initialize(
-    token: string,
     placeId: number,
+    token: string,
     rawHTML: string
   ) {
     setModel(rawHTML)
     loadS3UploadSettings(
-      token,
-      placeId
+      placeId,
+      token
     )
   }
 
   const noTranslateAttrs = { class: 'notranslate', translate: 'no' };
   const editorRef = useRef(null)
+  const hasLoadOnce = useRef(false)
 
-  const loadS3UploadSettings = async (token: string, placeId: number) => {
+  const loadS3UploadSettings = async (placeId: number, token: string) => {
     try {
-      const settingInfos = await apiClient.getEditorInfo({ placeId, token })
+      const settingInfos = await apiClient.getEditorInfo({ placeId, token, log: (msg) => { } })
       /* @ts-ignore */
-      postMessage('able to load settingsInfo')
       const editor = editorRef.current.editor
-      postMessage(`editor${editor}`)
-
       editor.opts.imageUploadToS3 = settingInfos
       setStatus(DisplayStatus.SHOWING)
     } catch (e) {
@@ -95,6 +92,13 @@ const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
 
   useEffect(() => {
     (window as any).getRawHTML = getRawHTML;
+  }, [getRawHTML]);
+
+  useEffect(() => {
+    if (hasLoadOnce.current) {
+      return
+    }
+    hasLoadOnce.current = true;
     (window as any).initialize = initialize;
     Froala.DefineIconTemplate('element', '[ELEMENT]');
     Froala.DefineIconTemplate('element', '[ELEMENT]');
@@ -119,8 +123,8 @@ const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
       },
     });
     if (token && placeId && status == DisplayStatus.IDLE && editorRef.current)
-      loadS3UploadSettings(token, placeId)
-  }, [status]);
+      loadS3UploadSettings(placeId, token)
+  }, []);
 
 
   const iframeStyle = `
@@ -270,8 +274,8 @@ const FroalaEditorComponent: React.FC<Props> = ({ token, placeId }) => {
         "entities",
         "inlineClass",
         "inlineStyle",
-        // 'codeBeautif '
-        // 'spellChecker',
+        'codeBeautif',
+        'spellChecker',
         "imageTUI"
       ]
     },

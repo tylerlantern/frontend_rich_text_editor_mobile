@@ -9,9 +9,9 @@ const endpoint = function(path: string): string {
 
 export function getAPICLientLive(): APIClient {
   return {
-    getEditorInfo: async function({ placeId, token }): Promise<EditorInfoResponse | null> {
+    getEditorInfo: async function({ placeId, token, log }): Promise<EditorInfoResponse | null> {
       const url = endpoint(
-        `/places/${placeId}/advancedEditor/uploadInfo`
+        `places/${placeId}/advancedEditor/uploadInfo`
       )
       const response = await fetch(url, {
         method: 'POST',
