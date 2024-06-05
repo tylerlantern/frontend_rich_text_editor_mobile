@@ -11,7 +11,7 @@ export function getAPICLientLive(): APIClient {
   return {
     getEditorInfo: async function({ placeId, token, log }): Promise<EditorInfoResponse | null> {
       const url = endpoint(
-        `places/${placeId}/advancedEditor/uploadInfo`
+        `v1/places/${placeId}/advancedEditor/uploadInfo`
       )
       const response = await fetch(url, {
         method: 'POST',
